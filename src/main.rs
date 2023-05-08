@@ -7,6 +7,7 @@ use std::{
 
 use basics::{
     functions::parser::get_func_name,
+    ifs::ifs,
     out::{
         print::{
             error_print::error_print_content, error_print_line::error_print_line_content,
@@ -17,7 +18,9 @@ use basics::{
 };
 use string::operations::{push::push_content, remove::remove_content};
 use variables::{
-    conversions::into::into_content, filesystem::{open, write::file_write_content}, var_parser::parse_variable,
+    conversions::into::into_content,
+    filesystem::{open, write::file_write_content},
+    var_parser::parse_variable,
     variable::CanBeType,
 };
 
@@ -123,6 +126,11 @@ fn main() {
                     continue;
                 }
             }
+            
+            if line == ("endif") {
+                final_file_content.push_str(r#"}"#);
+                continue;
+            }
 
             new_content = match line {
                 // All the prints
@@ -158,6 +166,8 @@ fn main() {
 
                     formatted
                 }
+
+                x if x.starts_with("if ") => ifs::if_content(x),
 
                 x if x.contains("write_file(") => file_write_content(x),
 
