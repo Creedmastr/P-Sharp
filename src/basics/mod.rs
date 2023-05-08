@@ -1,3 +1,3 @@
 pub mod functions;
-pub mod print;
+pub mod out;
 pub mod type_format;

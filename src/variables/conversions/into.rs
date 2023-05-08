@@ -1,6 +1,6 @@
 use crate::variables::variable::CanBeType;
 
-pub fn into_content(var_content: String) -> String { 
+pub fn into_content(var_content: String) -> String {
     let content_quoted = {
         let name = var_content.replace(".into()", "");
         let mut result = String::from(r#"""#);

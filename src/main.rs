@@ -1,16 +1,16 @@
 use std::{
     fs,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Write},
     ops::Not,
     process::Command,
 };
 
 use basics::{
     functions::parser::get_func_name,
-    print::{
+    out::{print::{
         error_print::error_print_content, error_print_line::error_print_line_content,
         print::print_content, print_line::print_line_content,
-    },
+    }, std::{stdout::flush, stderr::eflush}},
 };
 use string::operations::{push::push_content, remove::remove_content};
 use variables::{
@@ -155,6 +155,10 @@ fn main() {
 
                     formatted
                 }
+
+                x if x == "flush()" => flush(),
+
+                x if x == "eflush()" => eflush(),
 
                 _ => line,
             };
