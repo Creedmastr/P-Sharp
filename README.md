@@ -7,8 +7,12 @@ This project is my attempt at creating a programming language. It is variable dr
 To use the compiler, just download the binary, or compile it yourself from this `cargo` project.
 
 # Build
-
-Just `cargo build --release` inside this directory (with the Rust compiler & cargo installed, obviously). There are no dependecies.
+To install RustUp (on Linux/Mac):
+`curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
+First clone this repo:
+`git clone https://github.com/Creedmastr/P-Sharp``
+Then cd and build:
+`cd P-Sharp && cargo build --release`
 
 # Usage
 
