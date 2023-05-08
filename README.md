@@ -18,7 +18,7 @@ Then cd and build:
 
 To:
 - Start: create a file named .ps
-- Compile it with `ps ./<filename> <is_rust>`. Is rust is not an optionnal argument, which you can set to true if you want the Rust file before it is compiled. Please note that you have to be in the same directory as the file for everything to work properly.
+- Compile it with `psharp ./<filename> <is_rust>`. Is rust is not an optionnal argument, which you can set to true if you want the Rust file before it is compiled. Please note that you have to be in the same directory as the file for everything to work properly.
 - Create a function with the `function` keyword, followed by its name (with or without parenthesis) and the type it returns (int, uint, float or string, or any other Rust type [NOT DIRECTLY SUPPORTED]). For no return type, use the `null` or `void` type.
 - Create a variable with the var keyword. Types are inferred.
 - Use print for print, print_line for print_line, and error_print along with error_print_line for error prints.
