@@ -38,6 +38,7 @@ fn main() {
         panic!("The argument specified is nor a valid file nor a valid directory!")
     }
 
+    // Get the lines
     let file = fs::File::open(&args[1]).unwrap();
     let buffreader = BufReader::new(file);
     let mut final_file_content = String::new();
@@ -55,6 +56,7 @@ fn main() {
         if line.starts_with("var") {
             let var = parse_variable(line.clone());
 
+            // Put the right type and not an inferred one if possible
             match var.can_be_type {
                 CanBeType {
                     can_be_int: true,
@@ -109,6 +111,7 @@ fn main() {
         } else {
             let mut new_content = String::new();
 
+            // Checks specific for the functions
             if is_in_function {
                 if line.contains("endfunc") {
                     is_in_function = false;
@@ -127,13 +130,16 @@ fn main() {
                 }
             }
 
+            // For the ifs
             if line == "endif" {
                 final_file_content.push_str(r#"}"#);
                 continue;
             }
 
+            // Get the final content
             new_content = match line {
                 // All the prints
+                // Uses not error_, etc. to not detect error_print as print & error_print_line as print_line
                 x if x.contains("print(") && x.contains("error_print(").not() => print_content(x),
 
                 x if x.contains("print_line(") && x.contains("error_print_line(").not() => print_line_content(x),
@@ -186,6 +192,7 @@ fn main() {
         }
     }
 
+    // Check the args, by first checking the length not to get errors
     match args.len() {
         x if x >= 3 => {
             makefile::build::build_file(
