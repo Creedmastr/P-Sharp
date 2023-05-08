@@ -22,9 +22,8 @@ pub fn parse_variable(line: String) -> Variable {
         .replace("var ", "")
         .replace("mutable", "")
         .replace(format!("{0}  ", name).as_str(), "");
-    
+
     let content_quoted = content_quoted.replace(&format!("{0}  ", name), "");
-    eprintln!("{}", content_quoted);
 
     let temp_var = Variable {
         name: name,

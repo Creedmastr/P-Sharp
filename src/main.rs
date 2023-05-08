@@ -12,7 +12,7 @@ use basics::{
         print::print_content, print_line::print_line_content,
     },
 };
-use string::operations::{remove::remove_content, push::push_content};
+use string::operations::{push::push_content, remove::remove_content};
 use variables::{var_parser::parse_variable, variable::CanBeType};
 
 use crate::basics::type_format::{type_format, TypeFormatting};
@@ -83,10 +83,18 @@ fn main() {
 
                         x if x.contains("push(") => push_content(x),
 
+                        x if x.contains("file_to_string(") => {
+                            variables::filesystem::open::file_open_content(var.content)
+                        }
+
                         _ => var.content_quoted.clone(),
                     };
 
-                    final_file_content.push_str(&format!("let {0} = {1};\n", var.name, new_content.replace("mutable", "")))
+                    final_file_content.push_str(&format!(
+                        "let {0} = {1};\n",
+                        var.name,
+                        new_content.replace("mutable", "")
+                    ))
                 }
             }
         } else {
