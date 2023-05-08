@@ -9,6 +9,6 @@ pub fn get_func_name(line: String) -> Function {
     return Function {
         name: name,
         func_type: func_type,
-        content: String::new()
-    }
+        content: String::new(),
+    };
 }

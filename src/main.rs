@@ -12,7 +12,7 @@ use basics::{
         print::print_content, print_line::print_line_content,
     },
 };
-use string::operations::remove::remove_content;
+use string::operations::{remove::remove_content, push::push_content};
 use variables::{var_parser::parse_variable, variable::CanBeType};
 
 use crate::basics::type_format::{type_format, TypeFormatting};
@@ -81,10 +81,12 @@ fn main() {
                     let new_content = match var.content_quoted {
                         x if x.contains("remove(") => remove_content(x),
 
+                        x if x.contains("push(") => push_content(x),
+
                         _ => var.content_quoted.clone(),
                     };
 
-                    final_file_content.push_str(&format!("let {0} = {1};\n", var.name, new_content))
+                    final_file_content.push_str(&format!("let {0} = {1};\n", var.name, new_content.replace("mutable", "")))
                 }
             }
         } else {
@@ -144,10 +146,9 @@ fn main() {
                 }
 
                 _ => line,
-            }
-            .replace("mutable", "");
+            };
 
-            final_file_content.push_str(&format!("{}", new_content))
+            final_file_content.push_str(&format!("{}", new_content.replace("mutable", "mut")))
         }
     }
 

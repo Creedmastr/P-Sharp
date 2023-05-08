@@ -13,6 +13,5 @@ pub fn error_print_line_content(content: String) -> String {
         let _ = result.push_str(");\n");
     }
 
-
     return result;
 }

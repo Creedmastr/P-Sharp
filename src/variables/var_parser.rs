@@ -6,9 +6,25 @@ pub fn parse_variable(line: String) -> Variable {
 
     let mut splitted = current_line.split_whitespace();
     let _name = splitted.next().unwrap().to_string();
-    let name = splitted.next().unwrap().to_string();
+    let mut name = splitted
+        .next()
+        .unwrap()
+        .to_string()
+        .replace("mutable", "mut");
 
-    let content_quoted = current_line.replace("=", "").replace("var ", "").replace(format!("{0}  ", name).as_str(), "");
+    if name == "mutable" || name == "mut" {
+        name.push_str(" ");
+        name.push_str(&splitted.next().unwrap().to_string());
+    }
+
+    let content_quoted = current_line
+        .replace("=", "")
+        .replace("var ", "")
+        .replace("mutable", "")
+        .replace(format!("{0}  ", name).as_str(), "");
+    
+    let content_quoted = content_quoted.replace(&format!("{0}  ", name), "");
+    eprintln!("{}", content_quoted);
 
     let temp_var = Variable {
         name: name,
