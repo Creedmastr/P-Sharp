@@ -13,7 +13,10 @@ use basics::{
     },
 };
 use string::operations::{push::push_content, remove::remove_content};
-use variables::{var_parser::parse_variable, variable::CanBeType};
+use variables::{
+    conversions::into::into_content, filesystem::open, var_parser::parse_variable,
+    variable::CanBeType,
+};
 
 use crate::basics::type_format::{type_format, TypeFormatting};
 
@@ -83,9 +86,9 @@ fn main() {
 
                         x if x.contains("push(") => push_content(x),
 
-                        x if x.contains("file_to_string(") => {
-                            variables::filesystem::open::file_open_content(var.content)
-                        }
+                        x if x.contains("file_to_string(") => open::file_open_content(var.content),
+
+                        x if x.contains("into(") => into_content(var.content),
 
                         _ => var.content_quoted.clone(),
                     };
