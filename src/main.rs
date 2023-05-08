@@ -5,14 +5,22 @@ use std::{
     process::Command,
 };
 
-use basics::print::{print::print_content, error_print::error_print_content, error_print_line::error_print_line_content, print_line::print_line_content};
+use basics::{
+    functions::parser::get_func_name,
+    print::{
+        error_print::error_print_content, error_print_line::error_print_line_content,
+        print::print_content, print_line::print_line_content,
+    },
+};
 use string::operations::remove::remove_content;
 use variables::{var_parser::parse_variable, variable::CanBeType};
 
+use crate::basics::type_format::type_format;
+
+mod basics;
 mod makefile;
 mod string;
 mod variables;
-mod basics;
 
 fn main() {
     let args = std::env::args().collect::<Vec<_>>();
@@ -24,6 +32,8 @@ fn main() {
     let file = fs::File::open(&args[1]).unwrap();
     let buffreader = BufReader::new(file);
     let mut final_file_content = String::new();
+
+    let mut is_in_function = false;
 
     for line in buffreader.lines() {
         let line = line.unwrap();
@@ -41,75 +51,100 @@ fn main() {
                     can_be_int: true,
                     can_be_uint: false,
                     can_be_float: false,
-                } => final_file_content.push_str(
-                    &format!(
-                        "let {0}: i32 = {1}; \n",
-                        var.name,
-                        var.content.parse::<i32>().unwrap()
-                    )
-                    ,
-                ),
+                } => final_file_content.push_str(&format!(
+                    "let {0}: i32 = {1}; \n",
+                    var.name,
+                    var.content.parse::<i32>().unwrap()
+                )),
 
                 CanBeType {
                     can_be_int: true,
                     can_be_uint: true,
                     can_be_float: false,
-                } => final_file_content.push_str(
-                    &format!(
-                        "let {0}: u32 = {1}; \n",
-                        var.name,
-                        var.content.parse::<u32>().unwrap()
-                    )
-                    ,
-                ),
+                } => final_file_content.push_str(&format!(
+                    "let {0}: u32 = {1}; \n",
+                    var.name,
+                    var.content.parse::<u32>().unwrap()
+                )),
 
                 CanBeType {
                     can_be_int: false,
                     can_be_uint: false,
                     can_be_float: true,
-                } => final_file_content.push_str(
-                    &format!(
-                        "let {0}: f64 = {1};\n",
-                        var.name,
-                        var.content.parse::<f64>().unwrap()
-                    )
-                    ,
-                ),
+                } => final_file_content.push_str(&format!(
+                    "let {0}: f64 = {1};\n",
+                    var.name,
+                    var.content.parse::<f64>().unwrap()
+                )),
 
                 _ => {
                     let new_content = match var.content_quoted {
-                        x if x.contains("remove(") => {
-                            remove_content(x)
-                        }
+                        x if x.contains("remove(") => remove_content(x),
 
                         _ => var.content_quoted.clone(),
                     };
 
-                    final_file_content
-                        .push_str(&format!("let {0} = {1};\n", var.name, new_content))
+                    final_file_content.push_str(&format!("let {0} = {1};\n", var.name, new_content))
                 }
             }
         } else {
-            let new_content = match line {
+            let mut new_content = String::new();
+
+            if is_in_function {
+                final_file_content.push_str(r#"     "#);
+
+                if line.contains("endfunc") {
+                    is_in_function = false;
+                    final_file_content.push_str(r#"}"#);
+                    continue;
+                }
+
+                if line.contains("(").not()
+                    && line.contains(")").not()
+                    && line.split_whitespace().count() == 1
+                {
+                    new_content.push_str(&format!("{}", line));
+                    continue;
+                }
+            }
+
+            new_content = match line {
                 // All the prints
-                x if x.starts_with("print(") => {
-                    print_content(x)
-                }
-                
-                x if x.starts_with("print_line(") => {
-                    print_line_content(x)
+                x if x.contains("print(") => print_content(x),
+
+                x if x.contains("print_line(") => print_line_content(x),
+
+                x if x.contains("error_print(") => error_print_content(x),
+
+                x if x.contains("error_print_line(") => error_print_line_content(x),
+
+                x if x.contains("function ") => {
+                    let func = get_func_name(x);
+
+                    is_in_function = true;
+                    let mut formatted;
+                    if func.name.contains("(") && func.name.contains(")") {
+                        formatted = if func.func_type == "null" || func.func_type == "void" {
+                            format!("fn {0} ", func.name)
+                        } else {
+                            format!("fn {0} -> {1} ", func.name, type_format(func.func_type))
+                        };
+                    } else {
+                        formatted = if func.func_type != "null" || func.func_type != "void" {
+                            format!("fn {0}() -> {1} ", func.name, type_format(func.func_type))
+                        } else {
+                            format!("fn {0}() ", func.name)
+                        };
+                    }
+
+                    formatted.push_str(r#"{"#);
+
+                    formatted
                 }
 
-                x if x.starts_with("error_print(") => {
-                    error_print_content(x)
-                }
-
-                x if x.starts_with("error_print_line(") => {
-                    error_print_line_content(x)
-                }
-
-                _ => line
-            };
+                _ => line,
+            }
+            .replace("mutable", "");
 
             final_file_content.push_str(&format!("{}", new_content))
         }
