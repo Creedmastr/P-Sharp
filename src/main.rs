@@ -7,7 +7,7 @@ use std::{
 
 use basics::{
     functions::parser::get_func_name,
-    ifs::ifs,
+    ifs,
     out::{
         print::{
             error_print::error_print_content, error_print_line::error_print_line_content,
@@ -126,8 +126,8 @@ fn main() {
                     continue;
                 }
             }
-            
-            if line == ("endif") {
+
+            if line == "endif" {
                 final_file_content.push_str(r#"}"#);
                 continue;
             }
@@ -167,7 +167,9 @@ fn main() {
                     formatted
                 }
 
-                x if x.starts_with("if ") => ifs::if_content(x),
+                x if x.starts_with("if ") => ifs::ifs::if_content(x),
+
+                x if x == "else" => ifs::elses::else_content(x),
 
                 x if x.contains("write_file(") => file_write_content(x),
 
