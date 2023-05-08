@@ -7,7 +7,7 @@ use std::{
 
 use basics::{
     functions::parser::get_func_name,
-    ifs,
+    ifs::{self, elseif::else_if_content},
     out::{
         print::{
             error_print::error_print_content, error_print_line::error_print_line_content,
@@ -134,9 +134,9 @@ fn main() {
 
             new_content = match line {
                 // All the prints
-                x if x.contains("print(") => print_content(x),
+                x if x.contains("print(") && x.contains("error_print(").not() => print_content(x),
 
-                x if x.contains("print_line(") => print_line_content(x),
+                x if x.contains("print_line(") && x.contains("error_print_line(").not() => print_line_content(x),
 
                 x if x.contains("error_print(") => error_print_content(x),
 
@@ -170,6 +170,8 @@ fn main() {
                 x if x.starts_with("if ") => ifs::ifs::if_content(x),
 
                 x if x == "else" => ifs::elses::else_content(x),
+
+                x if x.starts_with("else if") => else_if_content(x),
 
                 x if x.contains("write_file(") => file_write_content(x),
 
