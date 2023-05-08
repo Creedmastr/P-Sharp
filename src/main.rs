@@ -1,11 +1,12 @@
 use std::{
     fs,
     io::{BufRead, BufReader},
-    ops::Not,
+    ops::Not, process::Command,
 };
 
 use variables::{var_parser::parse_variable, variable::CanBeType};
 
+mod makefile;
 mod variables;
 
 fn main() {
@@ -22,6 +23,10 @@ fn main() {
     for line in buffreader.lines() {
         let line = line.unwrap();
 
+        if line.is_empty() {
+            continue;
+        }
+
         if line.starts_with("var") {
             let var = parse_variable(line.clone());
 
@@ -32,7 +37,7 @@ fn main() {
                     can_be_float: false,
                 } => final_file_content.push_str(
                     format!(
-                        "let {0}: i32 = {1}",
+                        "let {0}: i32 = {1}; \n",
                         var.name,
                         var.content.parse::<i32>().unwrap()
                     )
@@ -45,7 +50,7 @@ fn main() {
                     can_be_float: false,
                 } => final_file_content.push_str(
                     format!(
-                        "let {0}: u32 = {1}",
+                        "let {0}: u32 = {1}; \n",
                         var.name,
                         var.content.parse::<u32>().unwrap()
                     )
@@ -58,7 +63,7 @@ fn main() {
                     can_be_float: true,
                 } => final_file_content.push_str(
                     format!(
-                        "let {0}: f64 = {1}",
+                        "let {0}: f64 = {1};\n",
                         var.name,
                         var.content.parse::<f64>().unwrap()
                     )
@@ -77,6 +82,19 @@ fn main() {
             }
         }
     }
+    
+    match args.len() {
+        x if x >= 3 => {
+            makefile::build::build_file(final_file_content, args[2].parse::<bool>().unwrap_or(false));
 
-    eprintln!("{}", final_file_content);
+            if args[2] == "run" {
+                let _ = Command::new("bash").arg("./a.out");
+            }
+        }
+
+        _ => {
+            makefile::build::build_file(final_file_content, false)
+        }
+    }
+    
 }
