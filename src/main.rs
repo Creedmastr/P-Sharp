@@ -50,7 +50,7 @@ fn main() {
                 CanBeType {
                     can_be_int: true,
                     can_be_uint: false,
-                    can_be_float: false,
+                    can_be_float: true,
                 } => final_file_content.push_str(&format!(
                     "let {0}: i32 = {1}; \n",
                     var.name,
@@ -60,7 +60,7 @@ fn main() {
                 CanBeType {
                     can_be_int: true,
                     can_be_uint: true,
-                    can_be_float: false,
+                    can_be_float: true,
                 } => final_file_content.push_str(&format!(
                     "let {0}: u32 = {1}; \n",
                     var.name,
@@ -91,19 +91,19 @@ fn main() {
             let mut new_content = String::new();
 
             if is_in_function {
-                final_file_content.push_str(r#"     "#);
-
                 if line.contains("endfunc") {
                     is_in_function = false;
                     final_file_content.push_str(r#"}"#);
                     continue;
                 }
 
+                final_file_content.push_str(r#"     "#);
+
                 if line.contains("(").not()
                     && line.contains(")").not()
                     && line.split_whitespace().count() == 1
                 {
-                    new_content.push_str(&format!("{}", line));
+                    new_content.push_str(&format!("{}\n", line));
                     continue;
                 }
             }
@@ -138,6 +138,7 @@ fn main() {
                     }
 
                     formatted.push_str(r#"{"#);
+                    formatted.push_str("\n");
 
                     formatted
                 }

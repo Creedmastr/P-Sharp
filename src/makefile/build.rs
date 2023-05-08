@@ -5,7 +5,7 @@ pub fn build_file(file_content: String, is_rust: bool) {
 
     let _ = final_file.push_str("fn main() {\n");
     let _ = final_file.push_str(&file_content);
-    let _ = final_file.push_str("}");
+    let _ = final_file.push_str("\n}");
     
     fs::write("./a.rs", final_file).expect("Couldn't write temp file");
     let out = Command::new("rustc").arg("./a.rs").output().unwrap();
