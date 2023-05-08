@@ -1,20 +1,23 @@
 use std::{
     fs,
-    io::{BufRead, BufReader, Write},
+    io::{BufRead, BufReader},
     ops::Not,
     process::Command,
 };
 
 use basics::{
     functions::parser::get_func_name,
-    out::{print::{
-        error_print::error_print_content, error_print_line::error_print_line_content,
-        print::print_content, print_line::print_line_content,
-    }, std::{stdout::flush, stderr::eflush}},
+    out::{
+        print::{
+            error_print::error_print_content, error_print_line::error_print_line_content,
+            print::print_content, print_line::print_line_content,
+        },
+        std::{stderr::eflush, stdout::flush},
+    },
 };
 use string::operations::{push::push_content, remove::remove_content};
 use variables::{
-    conversions::into::into_content, filesystem::open, var_parser::parse_variable,
+    conversions::into::into_content, filesystem::{open, write::file_write_content}, var_parser::parse_variable,
     variable::CanBeType,
 };
 
@@ -155,6 +158,8 @@ fn main() {
 
                     formatted
                 }
+
+                x if x.contains("write_file(") => file_write_content(x),
 
                 x if x == "flush()" => flush(),
 
