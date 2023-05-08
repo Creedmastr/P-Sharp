@@ -15,7 +15,7 @@ use basics::{
 use string::operations::remove::remove_content;
 use variables::{var_parser::parse_variable, variable::CanBeType};
 
-use crate::basics::type_format::type_format;
+use crate::basics::type_format::{type_format, TypeFormatting};
 
 mod basics;
 mod makefile;
@@ -125,7 +125,7 @@ fn main() {
                     let mut formatted;
                     if func.name.contains("(") && func.name.contains(")") {
                         formatted = if func.func_type == "null" || func.func_type == "void" {
-                            format!("fn {0} ", func.name)
+                            format!("fn {0} ", func.name.type_format_in_string())
                         } else {
                             format!("fn {0} -> {1} ", func.name, type_format(func.func_type))
                         };
