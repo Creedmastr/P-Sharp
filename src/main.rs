@@ -6,6 +6,7 @@ use std::{
 };
 
 use features::{
+    commands::cmd::{clear_cmd, cmd_run_command_content},
     functions::parser::get_func_name,
     ifs::{self, elseif::else_if_content},
     out::{
@@ -90,7 +91,9 @@ fn main() {
 
                         x if x.contains("push(") => push_content(x),
 
-                        x if x.contains("file_to_string(") => open::file_open_content(var.content),
+                        x if x.contains("fs:file_to_string(") => {
+                            open::file_open_content(var.content)
+                        }
 
                         x if x.contains("into(") => into_content(var.content),
 
@@ -154,6 +157,7 @@ fn main() {
 
                 x if x.contains("error_print_line(") => error_print_line_content(x),
 
+                // Functions
                 x if x.contains("function ") => {
                     let func = get_func_name(x);
 
@@ -197,19 +201,27 @@ fn main() {
                     features::functions::loops::define_loops_content(x)
                 }
 
+                x if x.contains("cmd:run_command(") => cmd_run_command_content(x),
+
+                // Ifs
                 x if x.starts_with("if ") => ifs::ifs::if_content(x),
 
                 x if x == "else" => ifs::elses::else_content(x),
 
                 x if x.starts_with("else if") => else_if_content(x),
 
-                x if x.contains("write_file(") => file_write_content(x),
+                // Utilitaries
+                x if x.contains("fs:write_file(") => file_write_content(x),
 
-                x if x == "flush()" => flush(),
+                x if x == "out:flush()" => flush(),
 
-                x if x == "eflush()" => eflush(),
+                x if x == "eout:flush()" => eflush(),
 
+                // Maths
                 x if x.contains(" += ") => features::maths::plusequal::plusequal_content(x),
+
+                // Kinda macro functions
+                x if x.contains("cmd:clear_cmd(") => clear_cmd(),
 
                 _ => line,
             };
