@@ -9,11 +9,11 @@ use basics::{
     functions::parser::get_func_name,
     ifs::{self, elseif::else_if_content},
     out::{
+        outputs::{stderr::eflush, stdout::flush},
         print::{
             error_print::error_print_content, error_print_line::error_print_line_content,
             print::print_content, print_line::print_line_content,
         },
-        outputs::{stderr::eflush, stdout::flush},
     },
 };
 use string::operations::{push::push_content, remove::remove_content};
@@ -83,11 +83,8 @@ fn main() {
                     can_be_int: false,
                     can_be_uint: false,
                     can_be_float: true,
-                } => final_file_content.push_str(&format!(
-                    "let {0}: f64 = {1};\n",
-                    var.name,
-                    var.content
-                )),
+                } => final_file_content
+                    .push_str(&format!("let {0}: f64 = {1};\n", var.name, var.content)),
 
                 _ => {
                     let new_content = match var.content_quoted {
@@ -168,11 +165,19 @@ fn main() {
                         formatted = if func.func_type == "null" || func.func_type == "void" {
                             format!("fn {0} ", func.name.type_format_in_string())
                         } else {
-                            format!("fn {0} -> {1} ", func.name.type_format_in_string(), type_format(func.func_type))
+                            format!(
+                                "fn {0} -> {1} ",
+                                func.name.type_format_in_string(),
+                                type_format(func.func_type)
+                            )
                         };
                     } else {
                         formatted = if func.func_type != "null" || func.func_type != "void" {
-                            format!("fn {0}() -> {1} ", func.name.type_format_in_string(), type_format(func.func_type))
+                            format!(
+                                "fn {0}() -> {1} ",
+                                func.name.type_format_in_string(),
+                                type_format(func.func_type)
+                            )
                         } else {
                             format!("fn {0}() ", func.name.type_format_in_string())
                         };
@@ -184,12 +189,15 @@ fn main() {
                     formatted
                 }
 
-                x if x == "loop" => basics::functions::loops::infinite_loops_content(),
+                x if x == "loop" => {
+                    is_in_loop = true;
+                    basics::functions::loops::infinite_loops_content()
+                }
 
                 x if x.contains("loop ") => {
                     is_in_loop = true;
                     basics::functions::loops::define_loops_content(x)
-                } 
+                }
 
                 x if x.starts_with("if ") => ifs::ifs::if_content(x),
 
