@@ -184,9 +184,11 @@ fn main() {
                     formatted
                 }
 
+                x if x == "loop" => basics::functions::loops::infinite_loops_content(),
+
                 x if x.contains("loop ") => {
                     is_in_loop = true;
-                    basics::functions::loops::loop_content(x)
+                    basics::functions::loops::define_loops_content(x)
                 } 
 
                 x if x.starts_with("if ") => ifs::ifs::if_content(x),
