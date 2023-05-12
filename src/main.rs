@@ -5,7 +5,7 @@ use std::{
     process::Command,
 };
 
-use basics::{
+use features::{
     functions::parser::get_func_name,
     ifs::{self, elseif::else_if_content},
     out::{
@@ -21,9 +21,9 @@ use variables::{conversions::into::into_content, var_parser::parse_variable, var
 
 use filesystem::{open, write::file_write_content};
 
-use crate::basics::type_format::{type_format, TypeFormatting};
+use crate::features::type_format::{type_format, TypeFormatting};
 
-mod basics;
+mod features;
 mod filesystem;
 mod makefile;
 mod string;
@@ -189,12 +189,12 @@ fn main() {
 
                 x if x == "loop" => {
                     is_in_loop = true;
-                    basics::functions::loops::infinite_loops_content()
+                    features::functions::loops::infinite_loops_content()
                 }
 
                 x if x.contains("loop ") => {
                     is_in_loop = true;
-                    basics::functions::loops::define_loops_content(x)
+                    features::functions::loops::define_loops_content(x)
                 }
 
                 x if x.starts_with("if ") => ifs::ifs::if_content(x),
@@ -209,7 +209,7 @@ fn main() {
 
                 x if x == "eflush()" => eflush(),
 
-                x if x.contains(" += ") => basics::maths::plusequal::plusequal_content(x),
+                x if x.contains(" += ") => features::maths::plusequal::plusequal_content(x),
 
                 _ => line,
             };
