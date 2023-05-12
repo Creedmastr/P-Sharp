@@ -17,16 +17,14 @@ use basics::{
     },
 };
 use string::operations::{push::push_content, remove::remove_content};
-use variables::{
-    conversions::into::into_content,
-    filesystem::{open, write::file_write_content},
-    var_parser::parse_variable,
-    variable::CanBeType,
-};
+use variables::{conversions::into::into_content, var_parser::parse_variable, variable::CanBeType};
+
+use filesystem::{open, write::file_write_content};
 
 use crate::basics::type_format::{type_format, TypeFormatting};
 
 mod basics;
+mod filesystem;
 mod makefile;
 mod string;
 mod variables;
