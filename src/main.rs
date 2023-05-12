@@ -44,6 +44,7 @@ fn main() {
     let mut final_file_content = String::new();
 
     let mut is_in_function = false;
+    let mut is_in_loop = false;
 
     for line in buffreader.lines() {
         let line = line.unwrap();
@@ -109,11 +110,9 @@ fn main() {
                 }
             }
         } else {
-            let mut new_content = String::new();
-
             // Checks specific for the functions
             if is_in_function {
-                if line.contains("endfunc") {
+                if line == "endfunc" {
                     is_in_function = false;
                     final_file_content.push_str(r#"}"#);
                     continue;
@@ -130,6 +129,16 @@ fn main() {
                 }
             }
 
+            if is_in_loop {
+                if line == "endloop" {
+                    is_in_loop = false;
+                    final_file_content.push_str(r#"}"#);
+                    continue;
+                }
+
+                final_file_content.push_str(r#"     "#);
+            }
+
             // For the ifs
             if line == "endif" {
                 final_file_content.push_str(r#"}"#);
@@ -137,7 +146,7 @@ fn main() {
             }
 
             // Get the final content
-            new_content = match line {
+            let new_content = match line {
                 // All the prints
                 // Uses not error_, etc. to not detect error_print as print & error_print_line as print_line
                 x if x.contains("print(") && x.contains("error_print(").not() => print_content(x),
@@ -175,6 +184,11 @@ fn main() {
                     formatted
                 }
 
+                x if x.contains("loop ") => {
+                    is_in_loop = true;
+                    basics::functions::loops::loop_content(x)
+                } 
+
                 x if x.starts_with("if ") => ifs::ifs::if_content(x),
 
                 x if x == "else" => ifs::elses::else_content(x),
@@ -186,6 +200,8 @@ fn main() {
                 x if x == "flush()" => flush(),
 
                 x if x == "eflush()" => eflush(),
+
+                x if x.contains(" += ") => basics::maths::plusequal::plusequal_content(x),
 
                 _ => line,
             };
