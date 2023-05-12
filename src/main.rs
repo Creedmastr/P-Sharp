@@ -85,7 +85,7 @@ fn main() {
                 } => final_file_content.push_str(&format!(
                     "let {0}: f64 = {1};\n",
                     var.name,
-                    var.content.parse::<f64>().unwrap()
+                    var.content
                 )),
 
                 _ => {
