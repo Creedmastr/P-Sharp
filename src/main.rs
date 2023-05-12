@@ -13,7 +13,7 @@ use basics::{
             error_print::error_print_content, error_print_line::error_print_line_content,
             print::print_content, print_line::print_line_content,
         },
-        std::{stderr::eflush, stdout::flush},
+        outputs::{stderr::eflush, stdout::flush},
     },
 };
 use string::operations::{push::push_content, remove::remove_content};
