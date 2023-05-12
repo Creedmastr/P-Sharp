@@ -53,7 +53,7 @@ fn main() {
             continue;
         }
 
-        if line.starts_with("var") {
+        if line.contains("var") {
             let var = parse_variable(line.clone());
 
             // Put the right type and not an inferred one if possible
@@ -125,7 +125,7 @@ fn main() {
                     && line.contains(")").not()
                     && line.split_whitespace().count() == 1
                 {
-                    new_content.push_str(&format!("{}\n", line));
+                    final_file_content.push_str(&format!("{}\n", line));
                     continue;
                 }
             }
@@ -159,13 +159,13 @@ fn main() {
                         formatted = if func.func_type == "null" || func.func_type == "void" {
                             format!("fn {0} ", func.name.type_format_in_string())
                         } else {
-                            format!("fn {0} -> {1} ", func.name, type_format(func.func_type))
+                            format!("fn {0} -> {1} ", func.name.type_format_in_string(), type_format(func.func_type))
                         };
                     } else {
                         formatted = if func.func_type != "null" || func.func_type != "void" {
-                            format!("fn {0}() -> {1} ", func.name, type_format(func.func_type))
+                            format!("fn {0}() -> {1} ", func.name.type_format_in_string(), type_format(func.func_type))
                         } else {
-                            format!("fn {0}() ", func.name)
+                            format!("fn {0}() ", func.name.type_format_in_string())
                         };
                     }
 

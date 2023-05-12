@@ -18,9 +18,9 @@ pub trait TypeFormatting {
 
 impl TypeFormatting for String {
     fn type_format_in_string(&self) -> String {
-        self.replace("int", "i32")
+        self.replace("uint", "u32")
+            .replace("int", "i32")
             .replace("float", "f64")
-            .replace("uint", "u32")
             .replace("string", "String")
     }
 }
