@@ -3,5 +3,5 @@ pub fn else_content(line: String) -> String {
     result.push_str(&line);
     result.push_str("{\n");
 
-    return result;
+    return result.replace(" not ", "!");
 }

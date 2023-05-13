@@ -1,7 +1,7 @@
 pub fn if_content(line: String) -> String {
-    let mut result = line.replace(" & ", " && ");
+    let mut result = line.replace(" & ", " && ").replace(" | ", " || ");
 
     result.push_str("{\n");
 
-    return result;
+    return result.replace(" not ", " !");
 }

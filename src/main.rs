@@ -147,18 +147,18 @@ fn main() {
             let new_content = match line {
                 // All the prints
                 // Uses not error_, etc. to not detect error_print as print & error_print_line as print_line
-                x if x.contains("print(") && x.contains("error_print(").not() => print_content(x),
+                x if x.contains("print(") && x.contains("error_print(").not() && x.contains("err_print(").not() => print_content(x),
 
-                x if x.contains("print_line(") && x.contains("error_print_line(").not() => {
+                x if x.contains("print_line(") | x.contains("println") && x.contains("error_print_line(").not() && x.contains("err_println(").not()  => {
                     print_line_content(x)
                 }
 
-                x if x.contains("error_print(") => error_print_content(x),
+                x if x.contains("error_print(") | x.contains("err_print(") => error_print_content(x),
 
-                x if x.contains("error_print_line(") => error_print_line_content(x),
+                x if x.contains("error_print_line(") | x.contains("err_println(") => error_print_line_content(x),
 
                 // Functions
-                x if x.contains("function ") => {
+                x if x.contains("function ") | x.contains("") => {
                     let func = get_func_name(x);
 
                     is_in_function = true;
