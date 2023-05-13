@@ -15,7 +15,7 @@ use features::{
             error_print::error_print_content, error_print_line::error_print_line_content,
             print::print_content, print_line::print_line_content,
         },
-    },
+    }, checker::check,
 };
 use string::operations::{push::push_content, remove::remove_content};
 use variables::{conversions::into::into_content, var_parser::parse_variable, variable::CanBeType};
@@ -39,6 +39,7 @@ fn main() {
     let file = fs::File::open(&args[1]).unwrap();
     let buffreader = BufReader::new(file);
     let mut final_file_content = String::new();
+    let mut line_counter: u32 = 1;
 
     let mut is_in_function = false;
     let mut is_in_loop = false;
@@ -206,10 +207,14 @@ fn main() {
                 x if x.contains("cmd:clear_cmd(") => clear_cmd(),
 
                 _ => line,
-            };
+            }.replace("mutable", "mut");
 
-            final_file_content.push_str(&format!("{}", new_content.replace("mutable", "mut")))
+            check(&new_content, line_counter);
+
+            final_file_content.push_str(&format!("{}", new_content))
         }
+
+        line_counter += 1;
     }
 
     // Check the args, by first checking the length not to get errors
