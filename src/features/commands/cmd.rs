@@ -59,7 +59,3 @@ pub fn cmd_run_command_content(line: String) -> String {
 
     return result;
 }
-
-pub fn clear_cmd() -> String {
-    return cmd_run_command_content(r#"cmd:run_command("clear")"#.to_string());
-}

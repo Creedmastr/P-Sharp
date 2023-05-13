@@ -6,7 +6,7 @@ use std::{
 };
 
 use features::{
-    commands::cmd::{clear_cmd, cmd_run_command_content},
+    commands::{cmd::cmd_run_command_content, clear::clear_cmd},
     functions::parser::get_func_name,
     ifs::{self, elseif::else_if_content},
     out::{
