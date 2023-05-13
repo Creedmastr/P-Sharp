@@ -1,7 +1,10 @@
 use super::ifs::if_content;
 
 pub fn else_if_content(line: String) -> String {
-    let line = line.replace("else", "").replace(" & ", " && ").replace(" | ", " || ");
+    let line = line
+        .replace("else", "")
+        .replace(" & ", " && ")
+        .replace(" | ", " || ");
 
     let second = if_content(line);
 

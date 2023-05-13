@@ -1,2 +1,2 @@
-pub mod print;
 pub mod outputs;
+pub mod print;

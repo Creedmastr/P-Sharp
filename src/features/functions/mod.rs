@@ -1,3 +1,4 @@
+pub mod core;
 pub mod func;
-pub mod parser;
 pub mod loops;
+pub mod parser;

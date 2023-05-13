@@ -6,8 +6,8 @@ use std::{
 };
 
 use features::{
-    commands::{cmd::cmd_run_command_content, clear::clear_cmd},
-    functions::parser::get_func_name,
+    commands::{clear::clear_cmd, cmd::cmd_run_command_content},
+    functions::core::function_content,
     ifs::{self, elseif::else_if_content},
     out::{
         outputs::{stderr::eflush, stdout::flush},
@@ -21,8 +21,6 @@ use string::operations::{push::push_content, remove::remove_content};
 use variables::{conversions::into::into_content, var_parser::parse_variable, variable::CanBeType};
 
 use filesystem::{open, write::file_write_content};
-
-use crate::features::type_format::{type_format, TypeFormatting};
 
 mod features;
 mod filesystem;
@@ -147,48 +145,32 @@ fn main() {
             let new_content = match line {
                 // All the prints
                 // Uses not error_, etc. to not detect error_print as print & error_print_line as print_line
-                x if x.contains("print(") && x.contains("error_print(").not() && x.contains("err_print(").not() => print_content(x),
+                x if x.contains("print(")
+                    && x.contains("error_print(").not()
+                    && x.contains("err_print(").not() =>
+                {
+                    print_content(x)
+                }
 
-                x if x.contains("print_line(") | x.contains("println") && x.contains("error_print_line(").not() && x.contains("err_println(").not()  => {
+                x if x.contains("print_line(") | x.contains("println")
+                    && x.contains("error_print_line(").not()
+                    && x.contains("err_println(").not() =>
+                {
                     print_line_content(x)
                 }
 
-                x if x.contains("error_print(") | x.contains("err_print(") => error_print_content(x),
+                x if x.contains("error_print(") | x.contains("err_print(") => {
+                    error_print_content(x)
+                }
 
-                x if x.contains("error_print_line(") | x.contains("err_println(") => error_print_line_content(x),
+                x if x.contains("error_print_line(") | x.contains("err_println(") => {
+                    error_print_line_content(x)
+                }
 
                 // Functions
                 x if x.contains("function ") | x.contains("") => {
-                    let func = get_func_name(x);
-
                     is_in_function = true;
-                    let mut formatted;
-                    if func.name.contains("(") && func.name.contains(")") {
-                        formatted = if func.func_type == "null" || func.func_type == "void" {
-                            format!("fn {0} ", func.name.type_format_in_string())
-                        } else {
-                            format!(
-                                "fn {0} -> {1} ",
-                                func.name.type_format_in_string(),
-                                type_format(func.func_type)
-                            )
-                        };
-                    } else {
-                        formatted = if func.func_type != "null" || func.func_type != "void" {
-                            format!(
-                                "fn {0}() -> {1} ",
-                                func.name.type_format_in_string(),
-                                type_format(func.func_type)
-                            )
-                        } else {
-                            format!("fn {0}() ", func.name.type_format_in_string())
-                        };
-                    }
-
-                    formatted.push_str(r#"{"#);
-                    formatted.push_str("\n");
-
-                    formatted
+                    function_content(x)
                 }
 
                 x if x == "loop" => {
