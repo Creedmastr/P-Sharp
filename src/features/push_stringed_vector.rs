@@ -1,4 +1,4 @@
-pub fn push_stringed_vector(stringed_vec: String, split_char: &str) -> String {
+pub fn push_stringed_vector(stringed_vec: &String, split_char: &str) -> String {
     let sliced_vector = stringed_vec.split(split_char).collect::<Vec<&str>>();
     let mut result: String = String::new();
 
