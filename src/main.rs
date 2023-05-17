@@ -15,7 +15,7 @@ use features::{
             error_print::error_print_content, error_print_line::error_print_line_content,
             print::print_content, print_line::print_line_content,
         },
-    }, checker::check,
+    }, checker::{Modifiers, check_modifier},
 };
 use string::operations::{push::push_content, remove::remove_content};
 use variables::{conversions::into::into_content, var_parser::parse_variable, variable::CanBeType};
@@ -40,6 +40,7 @@ fn main() {
     let buffreader = BufReader::new(file);
     let mut final_file_content = String::new();
     let mut line_counter: u32 = 1;
+    let modifiers = Modifiers::new();
 
     let mut is_in_function = false;
     let mut is_in_loop = false;
@@ -47,12 +48,16 @@ fn main() {
     for line in buffreader.lines() {
         let line = line.unwrap();
 
+        let (modifiers, line) = check_modifier(&line, modifiers);
+
+        features::checker::check(&line, line_counter, modifiers);
+
         if line.is_empty() {
             final_file_content.push_str("\n");
             continue;
         }
 
-        if line.contains("var") {
+        if line.starts_with("var ") {
             let var = parse_variable(line.clone());
 
             // Put the right type and not an inferred one if possible
@@ -169,7 +174,7 @@ fn main() {
                 }
 
                 // Functions
-                x if x.contains("function ") | x.contains("") => {
+                x if x.contains("function ") | x.contains("func ") => {
                     is_in_function = true;
                     function_content(x)
                 }
@@ -208,8 +213,6 @@ fn main() {
 
                 _ => line,
             }.replace("mutable", "mut");
-
-            check(&new_content, line_counter);
 
             final_file_content.push_str(&format!("{}", new_content))
         }

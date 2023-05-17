@@ -1,30 +1,44 @@
-struct Modifiers {
-    allow_rust_expressions: bool,
+#[derive(Clone, Copy)]
+pub struct Modifiers {
+    pub allow_rust_expressions: bool,
 }
 
 impl Modifiers {
-    fn new() -> Modifiers {
-        Modifiers { allow_rust_expressions: false }
+    pub fn new() -> Modifiers {
+        Modifiers {
+            allow_rust_expressions: false,
+        }
     }
 }
 
-pub fn check(line: &String, line_counter: u32) {
-    let mut modifiers = Modifiers::new();
+pub fn check_modifier(line: &String, current_modifier: Modifiers) -> (Modifiers, String) {
+    let mut new_modifiers = current_modifier;
 
-    if line_counter == 1 && line.starts_with("#![") {
+    if line.starts_with("#![") {
         if line == "#![allow(rust_expressions)]" {
-            modifiers.allow_rust_expressions = true;
+            new_modifiers.allow_rust_expressions = true;
+            return (new_modifiers, String::new());
         }
-    } else {
-        if line.ends_with(";") {
+    }
+
+    return (new_modifiers, line.clone());
+}
+
+pub fn check(line: &String, line_counter: u32, current_modifier: Modifiers) {
+    if line.ends_with(";") {
+        panic!("ERROR: Semicolon misplaced on line {}", line_counter);
+    };
+
+    if !current_modifier.allow_rust_expressions {
+        if line.contains("Command::new(") {
+            panic!("ERROR: 'Command::new(' is a invalid Rust expression. Try using cmd:run_command(<commmand>) on line {}", line_counter);
+        };
+
+        if line.contains("fs::File::") {
             panic!(
-                "ERROR: Semicolon placed on the wrong spot on line {}",
+                "ERROR: 'fs::File::' is a invalid Rust expression. Try using fs: on line {}",
                 line_counter
             );
-        };
-    
-        if line.contains("Commands::new(") {
-            panic!("ERROR: 'Commands::new(' is a invalid Rust expression. Try using cmd:run_command(<commmand>) on line {}", line_counter);
         };
     };
 }
