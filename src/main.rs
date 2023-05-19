@@ -15,7 +15,7 @@ use features::{
             error_print::error_print_content, error_print_line::error_print_line_content,
             print::print_content, print_line::print_line_content,
         },
-    }, checker::{Modifiers, check_modifier},
+    }, checker::{Modifiers, check_modifier}, comments::remove_comment,
 };
 use string::operations::{push::push_content, remove::remove_content};
 use variables::{conversions::into::into_content, var_parser::parse_variable, variable::CanBeType};
@@ -49,6 +49,7 @@ fn main() {
         let line = line.unwrap();
 
         let (modifiers, line) = check_modifier(&line, modifiers);
+        let line = remove_comment(&line);
 
         features::checker::check(&line, line_counter, modifiers);
 

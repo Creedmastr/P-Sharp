@@ -6,3 +6,4 @@ pub mod out;
 pub mod push_stringed_vector;
 pub mod type_format;
 pub mod checker;
+pub mod comments;
